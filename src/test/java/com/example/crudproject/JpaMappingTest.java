@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,12 +30,12 @@ public class JpaMappingTest {
     @Autowired
     private BoardRepository boardRepository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
+    // JPA의 save를 활용한 테스트 방법
     @BeforeEach
     public void init() {
-        boardRepository.save(Board.builder()
+        boardRepository.save(
+                Board.builder()
                 .title(title)
                 .content(content)
                 .contentView(contentView)
@@ -50,7 +49,7 @@ public class JpaMappingTest {
 
     @Test
     public void test() {
-        Optional<Board> optionalBoard  = boardRepository.findById((long) 1);
+        Optional<Board> optionalBoard  = boardRepository.findById(1L);
         if (optionalBoard .isPresent()) {
             Board board = optionalBoard.get();
             assertThat(board.getTitle(), is(title));
