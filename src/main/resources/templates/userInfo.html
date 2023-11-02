@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/userInfo.css">
+  <script  src="https://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="/js/userInfo.js"></script>
+  <title>내 정보</title>
+</head>
+<body>
+  <div class="login-container">
+    <h1>내 정보</h1>
+      <div class="input-container">
+        ID : <input type="text" id="loginId" th:value="${user.loginId}" required readonly>
+      </div>
+      <div class="input-container">
+        이름 : <input type="text" id="userName" th:value="${user.userName}" required>
+      </div>
+      <button type="button" id="userUpdate" >수정하기</button>
+      <button type="button" id="userDelete" >회원탈퇴</button>
+      <button type="button" onclick="location.href='/'" >뒤로 가기</button>
+  </div>
+</body>
+</html>
