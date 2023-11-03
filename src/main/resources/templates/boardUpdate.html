@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 수정</title>
+  <link rel="stylesheet" href="/css/boardWrite.css">
+  <script  src="https://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="/js/boardUpdate.js"></script>
+</head>
+<body>
+<div class="container">
+  <form>
+    <label for="content">제목: </label>
+    <input type="text" id="title" name="title" th:value="${board.content}" maxlength="40" required>
+    <label for="content">글 내용: </label>
+    <textarea th:text="${board.content}" id="content" name="content" rows="20" required></textarea>
+    <input type="hidden" id="userId" th:value="${board.userId}" >
+    <input type="hidden" id="boardId" th:value="${board.boardId}" >
+    <div class="button-container">
+      <button type="button" id="updateButton">수정하기</button>
+      <button type="button" onclick="goBack()">뒤로가기</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>
