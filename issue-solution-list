@@ -1,0 +1,30 @@
+1. application.properties 작성하는 민감정보가 github에 올라가지 않게 하는 방법
+ - application-aws.properties를 만들고, 거기에 민감정보를 입력.
+ - application.properties에는 spring.profiles.include = aws 만 작성
+ - gitignore에 applicatoin-aws.properties 작성
+
+
+2. JPA Mapping 테스트시 계속 테스트 실패 발생.
+spring.jpa.hibernate.ddl-auto = update 를
+spring.jpa.hibernate.ddl-auto = create 로 수정하여 해결.
+이후 다시 create를 update로 수정 후 개발
+ - ddl-auto 속성의 종류 5가지에 대해 공부 할 것. ( create, create-drop, update, validate, none(default) )
+
+
+3. BCryptPasswordEncoder 사용시 에러 발생
+ - 스프링 빈에 등록하지 않아서 발생한 오류
+ -
+@Configuration
+public class SecurityConfig {
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+
+추가해서 해결
+
+
+4. org.springframework.dao.InvalidDataAccessApiUsageException: Executing an update/delete query; nested exception is javax.persistence.TransactionRequiredException: Executing an update/delete query 오류 발생
+
+Service에 @Transactional 추가
