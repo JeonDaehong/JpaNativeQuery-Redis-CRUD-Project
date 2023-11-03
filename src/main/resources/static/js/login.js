@@ -1,9 +1,17 @@
 $(document).ready(function() {
     $("#loginButton").click(function() {
 
+        let loginIdVal = $("#loginId").val();
+        let passwordVal = $("#password").val();
+
+        if ( loginIdVal === "" || passwordVal === "") {
+            alert("공란 없이 전부 입력해주시기 바랍니다.");
+            return;
+        }
+
         let userData = {
-            loginId : $("#loginId").val(),
-            password : $("#password").val()
+            loginId : loginIdVal,
+            password : passwordVal
         };
 
         $.ajax({

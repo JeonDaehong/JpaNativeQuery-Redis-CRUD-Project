@@ -18,7 +18,7 @@
             <button class="button" th:if="${not loginSession}" onclick="location.href='/loginPage'">로그인하기</button>
             <button class="button" type="button" id="logoutButton" th:if="${loginSession}" >로그아웃</button>
             <button class="button" type="button" id="myInfoButton" th:if="${loginSession}" onclick="location.href='/userInfoPage'" >내 정보</button>
-            <button class="button" th:if="${loginSession}" onclick="getBoardList()">게시글 보러가기</button>
+            <button class="button" th:if="${loginSession}" onclick="location.href='/boardListPage'">게시글 보러가기</button>
             <button class="button" th:if="${not loginSession}" onclick="plzLoginAlert()">게시글 보러가기</button>
         </div>
     </div>

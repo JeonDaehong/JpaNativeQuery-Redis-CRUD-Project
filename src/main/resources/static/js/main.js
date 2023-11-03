@@ -12,10 +12,6 @@ $(document).ready(function() {
     });
 });
 
-function getBoardList() {
-
-}
-
 function plzLoginAlert() {
     alert("로그인 후에 이용가능합니다.");
 }
