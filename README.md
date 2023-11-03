@@ -24,3 +24,32 @@ This project utilizes two main tables: `TB_USER` and `TB_BOARD`.
 - `UPDT_DTTM` (DATETIME) - Update timestamp.
 
 The `USER_ID` in `TB_USER` serves as a reference key to establish a relationship with the `TB_BOARD` table. Additionally, the `PWSD` field is used for securely storing passwords, and its VARCHAR length is set to accommodate the encrypted values.
+
+## Features
+
+### User Management
+- **Sign-up**: Users can register for an account by providing their login ID, name, and password.
+
+- **Profile Update**: Registered users can update their profile information, including their name.
+
+- **Account Deactivation**: Users have the option to deactivate their accounts if they wish to leave the platform.
+
+- **Login**: Users can securely log in to their accounts with their credentials.
+
+- **Logout**: Users can log out of their accounts to secure their session.
+
+### Forum
+- **List Viewing**: Users can browse a list of forum posts, displayed with pagination (10 posts per page).
+
+- **Post Viewing**: Users can view the full content of a forum post, including the title and post body.
+
+- **Post Editing**: Users can edit their own forum posts, but only if they are the authors.
+
+- **Post Deletion**: Users can delete their own forum posts, ensuring post ownership.
+
+- **View Count Increment**: The system tracks and displays the number of views for each forum post, with view counts increasing as users visit the posts.
+
+### Authorization Control
+- **Post Editing and Deletion Authorization**: Users are granted permission to edit and delete only their own posts, ensuring data security.
+
+These features collectively offer a comprehensive user experience for managing accounts and participating in forum discussions.
