@@ -68,8 +68,7 @@ public class GetPageController {
     }
 
     /**
-     * 게시판 리스트 페이지로 이동
-     *  ++ 페이징 처리 10개씩
+     * 게시판 리스트 페이지로 이동 ( 페이징 처리 10개씩 )
      */
     @GetMapping("/boardListPage")
     public String boardListPage(HttpSession session, Model model,
