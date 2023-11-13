@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,9 +52,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     /**
      * 게시글 조회수 수정
      */
+    @Transactional
     @Modifying
     @Query (value = "UPDATE TB_BOARD SET BOARD_VIEW = BOARD_VIEW + 1 WHERE BOARD_ID = :boardId", nativeQuery = true)
     void addBoardView(@Param("boardId") Long boardId);
+
+    /**
+     * 마지막
+     */
 
     /**
      * 게시글 수정
