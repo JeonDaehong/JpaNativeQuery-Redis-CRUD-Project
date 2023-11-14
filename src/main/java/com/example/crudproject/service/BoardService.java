@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BoardService {
 
-    String writeBoard(Board board);
+    String writeBoard(String title, String content, Long userId);
 
     int getBoardCount();
 
@@ -16,8 +16,14 @@ public interface BoardService {
 
     Board getBoardInfo(Long boardId);
 
-    String updateBoard(Board board);
+    int getBoardViewRedisIncrement(Long boardId);
+
+    int getBoardViewRedis(Long boardId);
+
+    String updateBoard(String title, String content, Long boardId);
 
     String deleteBoard(Long boardId);
+
+    void deleteBoardAllByUser(Long userId);
 
 }

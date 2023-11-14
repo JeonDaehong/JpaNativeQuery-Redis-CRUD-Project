@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -32,12 +33,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query ( value = "SELECT * FROM TB_USER WHERE LOGIN_ID = :loginId", nativeQuery = true )
     User overlabCheck(@Param(value = "loginId") String loginId);
 
+
+    /**
+     * 내 정보 가져오기
+     */
+    @Query ( value = "SELECT * FROM TB_USER WHERE USER_ID = :userId", nativeQuery = true )
+    User getMyInfo(@Param(value = "userId") Long userId);
+
+
     /**
      * 회원 정보 수정
      */
+    @Transactional
     @Modifying
-    @Query( value = "UPDATE TB_USER SET USER_NM = :userName, UPDT_DTTM = :updateDatetime WHERE LOGIN_ID = :loginId", nativeQuery = true)
-    void updateUser(@Param(value = "loginId") String loginId,
+    @Query( value = "UPDATE TB_USER SET USER_NM = :userName, UPDT_DTTM = :updateDatetime WHERE USER_ID = :userId", nativeQuery = true)
+    void updateUser(@Param(value = "userId") Long userId,
                     @Param(value = "userName") String userName,
                     @Param(value = "updateDatetime") LocalDateTime updateDatetime);
 
@@ -45,7 +55,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * 회원 탈퇴
      */
     @Modifying
-    @Query( value = "DELETE FROM TB_USER WHERE LOGIN_ID = :loginId", nativeQuery = true)
-    void deleteUser(@Param(value = "loginId") String loginId);
+    @Query( value = "DELETE FROM TB_USER WHERE USER_ID = :userId", nativeQuery = true)
+    void deleteUser(@Param(value = "userId") Long userId);
 
 }

@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Entity
 @ToString
 @NoArgsConstructor
@@ -32,6 +31,11 @@ public class User {
 
     @Column(name = "UPDT_DTTM", nullable = false)
     private LocalDateTime updateDateTime;
+
+    // 필요에 의해 만든 Setter
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     @Builder
     public User(Long userId, String loginId, String userName,

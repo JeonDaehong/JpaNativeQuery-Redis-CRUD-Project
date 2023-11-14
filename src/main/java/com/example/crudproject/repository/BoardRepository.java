@@ -50,16 +50,23 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Board getBoardInfo(@Param("boardId") Long boardId);
 
     /**
-     * 게시글 조회수 수정
+     * Redis 조회수 추가
+     */
+    @Transactional
+    @Modifying
+    @Query (value = "UPDATE TB_BOARD SET BOARD_VIEW = BOARD_VIEW + :addView, UPDT_DTTM = :updateDateTime WHERE BOARD_ID = :boardId", nativeQuery = true)
+    void addBoardViewRedis(@Param("boardId") Long boardId,
+                           @Param("addView") int addView,
+                           @Param("updateDateTime") LocalDateTime updateDateTime);
+
+    /**
+     * 일반적인 조회수 추가
      */
     @Transactional
     @Modifying
     @Query (value = "UPDATE TB_BOARD SET BOARD_VIEW = BOARD_VIEW + 1 WHERE BOARD_ID = :boardId", nativeQuery = true)
     void addBoardView(@Param("boardId") Long boardId);
 
-    /**
-     * 마지막
-     */
 
     /**
      * 게시글 수정
@@ -78,5 +85,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Modifying
     @Query (value = "DELETE FROM TB_BOARD WHERE BOARD_ID = :boardId", nativeQuery = true)
     void deleteBoard(@Param("boardId") Long boardId);
+
+
+    /**
+     * 해당 유저의 게시글 모두 삭제
+     */
+    @Transactional
+    @Modifying
+    @Query (value = "DELETE FROM TB_BOARD WHERE USER_ID = :userId", nativeQuery = true)
+    void deleteBoardAllByUser(@Param("userId") Long userId);
 
 }

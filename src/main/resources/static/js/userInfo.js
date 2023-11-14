@@ -4,6 +4,7 @@ $(document).ready(function() {
 
         let loginIdVal = $("#loginId").val();
         let userNameVal = $("#userName").val();
+        let userIdVal = $("#userId").val();
 
         if ( loginIdVal === "" || userNameVal === "") {
             alert("공란 없이 전부 입력해주시기 바랍니다.");
@@ -11,6 +12,7 @@ $(document).ready(function() {
         }
 
         let userData = {
+            userId : userIdVal,
             loginId : loginIdVal,
             userName :userNameVal
         };
@@ -37,10 +39,15 @@ $(document).ready(function() {
 
     $("#deleteButton").click(function() {
 
-        if ( !confirm("정말로 회원 탈퇴를 하시겠습니까?") ) return;
+        if ( !confirm("만약 작성한 게시글이 있다면 삭제됩니다. 정말로 회원 탈퇴를 하시겠습니까?") ) return;
 
         let loginIdVal = $("#loginId").val();
-        let userData = { loginId : loginIdVal };
+        let userIdVal = $("#userId").val();
+
+        let userData = {
+            userId : userIdVal,
+            loginId : loginIdVal
+        };
 
         $.ajax({
             type : "POST", // 또는 다른 HTTP 메소드 사용

@@ -6,9 +6,7 @@ import com.example.crudproject.domain.User;
 import com.example.crudproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -47,12 +45,7 @@ public class BoardController {
         boolean loginSession = sessionUser != null;
         if ( !loginSession ) return "redirect:/loginPage";
 
-        Board board = new Board();
-        board.setTitle(title);
-        board.setContent(content);
-        board.setUserId(userId);
-
-        return boardService.writeBoard(board); // insert
+        return boardService.writeBoard(title, content, userId); // insert
 
     }
 
@@ -73,12 +66,7 @@ public class BoardController {
         boolean loginSession = sessionUser != null;
         if ( !loginSession ) return "redirect:/loginPage";
 
-        Board board = new Board();
-        board.setTitle(title);
-        board.setContent(content);
-        board.setBoardId(boardId);
-
-        return boardService.updateBoard(board); // update
+        return boardService.updateBoard(title, content, boardId); // update
 
     }
 
