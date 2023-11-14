@@ -2,6 +2,7 @@ package com.example.crudproject.controller;
 
 import com.example.crudproject.common.ResponseCode;
 import com.example.crudproject.domain.User;
+import com.example.crudproject.service.BoardService;
 import com.example.crudproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpSession;
 public class UserController {
 
     private final UserService userService;
+    private final BoardService boardService;
 
     /*
      * Validation Check Overload Method
@@ -30,10 +32,6 @@ public class UserController {
     }
     public boolean validationCheck(String loginId, String userName) {
         if (loginId.equals("") || userName.equals("")) return false;
-        return true;
-    }
-    public boolean validationCheck(String loginId) {
-        if (loginId.equals("")) return false;
         return true;
     }
 
@@ -48,19 +46,15 @@ public class UserController {
 
         if ( ! validationCheck(loginId, userName, password) ) return ResponseCode.ERROR_CODE;
 
-        User user = new User();
-        user.setLoginId(loginId);
-        user.setUserName(userName);
-        user.setPassword(password);
-
-        return userService.joinUser(user);
+        return userService.joinUser(loginId, userName, password);
     }
 
     /**
      *  내 정보 수정하기
      */
     @PostMapping("/user/update")
-    public String updateUser(@RequestParam(value = "loginId") String loginId,
+    public String updateUser(@RequestParam(value = "userId") Long userId,
+                             @RequestParam(value = "loginId") String loginId,
                              @RequestParam(value = "userName") String userName,
                              HttpServletRequest request, HttpSession session) {
 
@@ -71,13 +65,9 @@ public class UserController {
 
         if ( ! validationCheck(loginId, userName) ) return ResponseCode.ERROR_CODE;
 
-        User user = new User();
-        user.setLoginId(loginId);
-        user.setUserName(userName);
-        String resultCode = userService.updateUser(user);
+        String resultCode = userService.updateUser(userId, loginId, userName);
 
         if ( resultCode.equals(ResponseCode.SUCCESS_CODE)) {
-            sessionUser = (User) session.getAttribute("loginUser");
             sessionUser.setUserName(userName);
             session.setAttribute("loginUser", sessionUser);
         }
@@ -88,16 +78,17 @@ public class UserController {
      *  회원 탈퇴
      */
     @PostMapping("/user/delete")
-    public String updateUser(@RequestParam(value = "loginId") String loginId, HttpSession session) {
+    public String updateUser(@RequestParam(value = "loginId") String loginId,
+                             @RequestParam(value = "userId") Long userId,
+                             HttpSession session) {
 
         // Session 끊킬 시 redirect
         User user = (User) session.getAttribute("loginUser");
         boolean loginSession = user != null;
         if ( !loginSession ) return "redirect:/loginPage";
 
-        if ( ! validationCheck(loginId) ) return ResponseCode.ERROR_CODE;
-
-        String resultCode = userService.deleteUser(loginId);
+        boardService.deleteBoardAllByUser(userId);
+        String resultCode = userService.deleteUser(userId, loginId);
 
         if (!resultCode.equals(ResponseCode.SUCCESS_CODE)) return ResponseCode.ERROR_CODE;
 

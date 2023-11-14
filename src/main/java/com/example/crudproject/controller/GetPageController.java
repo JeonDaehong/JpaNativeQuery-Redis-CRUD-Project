@@ -2,6 +2,7 @@ package com.example.crudproject.controller;
 
 import com.example.crudproject.domain.Board;
 import com.example.crudproject.domain.User;
+import com.example.crudproject.domain.vo.BoardVo;
 import com.example.crudproject.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -99,7 +101,19 @@ public class GetPageController {
         if ( totalPageCount > startIdx + 10 ) nextPage = true;
 
         int count = 10;
-        List<Board> boardList = boardService.getBoardList(startIdx, count);
+        List<Board> dbBoardList = boardService.getBoardList(startIdx, count);
+        List<BoardVo> boardList = new ArrayList<>();
+        for ( Board board : dbBoardList ) {
+            BoardVo boardVo = new BoardVo();
+            boardVo.setBoardId(board.getBoardId());
+            boardVo.setTitle(board.getTitle());
+            boardVo.setContent(board.getContent());
+            boardVo.setBoardView(board.getBoardView() + boardService.getBoardViewRedis(board.getBoardId()));
+            boardVo.setCreateDateTime(board.getCreateDateTime());
+            boardVo.setUpdateDateTime(board.getUpdateDateTime());
+            boardVo.setUserId(board.getUserId());
+            boardList.add(boardVo);
+        }
 
         model.addAttribute("boardList", boardList);
         model.addAttribute("startIdx", startIdx);
@@ -144,7 +158,17 @@ public class GetPageController {
         model.addAttribute("user", user);
         model.addAttribute("loginSession", loginSession);
 
-        Board board = boardService.getBoardInfo(boardId);
+        Board dbBoard = boardService.getBoardInfo(boardId);
+
+        BoardVo board = new BoardVo();
+        board.setBoardId(dbBoard.getBoardId());
+        board.setTitle(dbBoard.getTitle());
+        board.setContent(dbBoard.getContent());
+        board.setBoardView(dbBoard.getBoardView() + boardService.getBoardViewRedisIncrement(dbBoard.getBoardId()));
+        board.setCreateDateTime(dbBoard.getCreateDateTime());
+        board.setUpdateDateTime(dbBoard.getUpdateDateTime());
+        board.setUserId(dbBoard.getUserId());
+
         model.addAttribute("board", board);
 
         // 수정, 삭제 버튼 활성화를 위한 boolean

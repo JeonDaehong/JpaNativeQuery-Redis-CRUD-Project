@@ -45,12 +45,7 @@ public class BoardController {
         boolean loginSession = sessionUser != null;
         if ( !loginSession ) return "redirect:/loginPage";
 
-        Board board = new Board();
-        board.setTitle(title);
-        board.setContent(content);
-        board.setUserId(userId);
-
-        return boardService.writeBoard(board); // insert
+        return boardService.writeBoard(title, content, userId); // insert
 
     }
 
@@ -71,12 +66,7 @@ public class BoardController {
         boolean loginSession = sessionUser != null;
         if ( !loginSession ) return "redirect:/loginPage";
 
-        Board board = new Board();
-        board.setTitle(title);
-        board.setContent(content);
-        board.setBoardId(boardId);
-
-        return boardService.updateBoard(board); // update
+        return boardService.updateBoard(title, content, boardId); // update
 
     }
 

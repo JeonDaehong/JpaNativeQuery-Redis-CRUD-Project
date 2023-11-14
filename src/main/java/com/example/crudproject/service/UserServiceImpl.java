@@ -24,20 +24,22 @@ public class UserServiceImpl implements UserService {
      * 회원가입
      */
     @Override
-    public String joinUser(User user) {
+    public String joinUser(String loginId, String userName, String password) {
 
-        if ( user.getPassword() == null ) return ResponseCode.ERROR_CODE;
+        if ( password == null ) return ResponseCode.ERROR_CODE;
 
-        User overlabCheckUser = userRepository.overlabCheck(user.getLoginId());
+        User overlabCheckUser = userRepository.overlabCheck(loginId);
         if ( overlabCheckUser != null ) return ResponseCode.OVERLAB_ERROR_CODE;
 
         try {
+            String bCryptPassword = bCryptPasswordEncoder.encode(password);
 
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            user.setCreateDateTime(LocalDateTime.now());
-            user.setUpdateDateTime(LocalDateTime.now());
-
-            userRepository.joinUser(user.getLoginId(), user.getLoginId(), user.getPassword(), user.getCreateDateTime(), user.getUpdateDateTime());
+            userRepository.joinUser(
+                    loginId,
+                    userName,
+                    bCryptPassword,
+                    LocalDateTime.now(),
+                    LocalDateTime.now());
 
             return ResponseCode.SUCCESS_CODE;
 
@@ -65,15 +67,23 @@ public class UserServiceImpl implements UserService {
 
 
     /**
+     * 내 정보 가져오기
+     */
+    @Override
+    public User getMyInfo(Long userId) {
+        return userRepository.getMyInfo(userId);
+    }
+
+
+    /**
      * 회원정보 수정
      */
     @Override
-    public String updateUser(User user) {
-        User dbUser = userRepository.overlabCheck(user.getLoginId());
+    public String updateUser(Long userId, String loginId, String userName) {
+        User dbUser = userRepository.overlabCheck(loginId);
         if ( dbUser == null ) return ResponseCode.ERROR_CODE;
         try {
-            user.setUpdateDateTime(LocalDateTime.now());
-            userRepository.updateUser(user.getLoginId(), user.getUserName(), user.getUpdateDateTime());
+            userRepository.updateUser(userId, userName, LocalDateTime.now());
             return ResponseCode.SUCCESS_CODE;
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -85,11 +95,11 @@ public class UserServiceImpl implements UserService {
      * 회원 탈퇴
      */
     @Override
-    public String deleteUser(String loginId) {
+    public String deleteUser(Long userId, String loginId) {
         User dbUser = userRepository.overlabCheck(loginId);
         if ( dbUser == null ) return ResponseCode.ERROR_CODE;
         try {
-            userRepository.deleteUser(loginId);
+            userRepository.deleteUser(userId);
             return ResponseCode.SUCCESS_CODE;
         } catch ( Exception e ) {
             e.printStackTrace();

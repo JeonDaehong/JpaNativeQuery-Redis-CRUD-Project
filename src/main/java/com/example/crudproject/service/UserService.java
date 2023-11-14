@@ -4,12 +4,14 @@ import com.example.crudproject.domain.User;
 
 public interface UserService {
 
-    String joinUser(User user);
+    String joinUser(String loginId, String userName, String password);
 
     User login(String loginId, String password);
 
-    String updateUser(User user);
+    User getMyInfo(Long userId);
 
-    String deleteUser(String loginId);
+    String updateUser(Long userId, String loginId, String userName);
+
+    String deleteUser(Long userId, String loginId);
 
 }

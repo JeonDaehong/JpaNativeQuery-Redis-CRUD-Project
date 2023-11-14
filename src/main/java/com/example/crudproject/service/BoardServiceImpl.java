@@ -1,14 +1,16 @@
 package com.example.crudproject.service;
 
+import com.example.crudproject.common.RedisStringCode;
 import com.example.crudproject.common.ResponseCode;
 import com.example.crudproject.domain.Board;
 import com.example.crudproject.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,25 +21,23 @@ import java.util.List;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
+    private final RedisTemplate<String, Integer> redisViewTemplate;
 
     /**
      * 게시글 작성
      */
     @Override
-    public String writeBoard(Board board) {
+    public String writeBoard(String title, String content, Long userId) {
 
         try {
 
-            board.setCreateDateTime(LocalDateTime.now());
-            board.setUpdateDateTime(LocalDateTime.now());
-            board.setBoardView(0);
-
-            boardRepository.writeBoard(board.getTitle(),
-                    board.getContent(),
-                    board.getBoardView(),
-                    board.getCreateDateTime(),
-                    board.getUpdateDateTime(),
-                    board.getUserId());
+            boardRepository.writeBoard(
+                    title,
+                    content,
+                    0,
+                    LocalDateTime.now(),
+                    LocalDateTime.now(),
+                    userId);
 
             return ResponseCode.SUCCESS_CODE;
 
@@ -67,22 +67,50 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     public Board getBoardInfo(Long boardId) {
-        try {
-            boardRepository.addBoardView(boardId);
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
         return boardRepository.getBoardInfo(boardId);
+    }
+
+    /**
+     * 게시글 조회수 Redis에 넣고 반환하기
+     */
+    @Override
+    public int getBoardViewRedisIncrement(Long boardId) {
+        String redisKey = RedisStringCode.BOARD_KEY_CODE + boardId;
+
+        ValueOperations<String, Integer> ops = redisViewTemplate.opsForValue();
+        Integer redisView = ops.get(redisKey);
+        if ( redisView != null ) {
+            ops.set(redisKey, redisView + 1);
+            return (redisView + 1);
+        } else {
+            ops.set(redisKey, 1);
+            return 1;
+        }
+    }
+
+    /**
+     * Redis에 있는 조회수 그냥 반환하기
+     */
+    @Override
+    public int getBoardViewRedis(Long boardId) {
+        String redisKey = RedisStringCode.BOARD_KEY_CODE + boardId;
+
+        ValueOperations<String, Integer> ops = redisViewTemplate.opsForValue();
+        Integer redisView = ops.get(redisKey);
+        if ( redisView != null ) {
+            return redisView;
+        } else {
+            return 0;
+        }
     }
 
     /**
      * 게시글 수정
      */
     @Override
-    public String updateBoard(Board board){
+    public String updateBoard(String title, String content, Long boardId){
         try {
-            board.setUpdateDateTime(LocalDateTime.now());
-            boardRepository.updateBoard(board.getBoardId(), board.getTitle(), board.getContent(), board.getUpdateDateTime());
+            boardRepository.updateBoard(boardId, title, content, LocalDateTime.now());
             return ResponseCode.SUCCESS_CODE;
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,4 +131,12 @@ public class BoardServiceImpl implements BoardService {
             return ResponseCode.ERROR_CODE;
         }
     };
+
+    /**
+     * 해당 유저의 게시글 모두 삭제
+     */
+    @Override
+    public void deleteBoardAllByUser(Long userId) {
+        boardRepository.deleteBoardAllByUser(userId);
+    }
 }

@@ -1,15 +1,13 @@
 package com.example.crudproject;
 
+import com.example.crudproject.common.RedisStringCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 
-import java.util.Map;
-import java.util.Set;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,6 +16,9 @@ public class RedisTemplateTest {
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private RedisTemplate<String, Integer> redisTemplateBoardView;
 
     @Test
     void testStrings() {
@@ -71,6 +72,23 @@ public class RedisTemplateTest {
 
         Long size = hashOperations.size(key);
         assertThat(size).isEqualTo(entries.size());
+    }
+
+    @Test
+    void getAllKeys() {
+
+        // 패턴을 "*"로 설정하여 모든 키를 조회합니다.
+        ScanOptions scanOptions = ScanOptions.scanOptions().match(RedisStringCode.BOARD_KEY_CODE + "*").build();
+
+        // Redis 서버에서 모든 키를 스캔합니다.
+        Cursor<byte[]> cursor = Objects.requireNonNull(redisTemplateBoardView.getConnectionFactory()).getConnection().scan(scanOptions);
+        while (cursor.hasNext()) {
+            byte[] keyBytes = cursor.next();
+            String key = new String(keyBytes, StandardCharsets.UTF_8);
+            Integer value = redisTemplateBoardView.opsForValue().get(key);
+            System.out.println("Key: " + key + ", Value: " + value);
+        }
+        cursor.close();
     }
 
 }
