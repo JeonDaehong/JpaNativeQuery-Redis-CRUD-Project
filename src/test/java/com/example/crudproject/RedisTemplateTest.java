@@ -8,8 +8,12 @@ import org.springframework.data.redis.core.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class RedisTemplateTest {
@@ -89,6 +93,37 @@ public class RedisTemplateTest {
             System.out.println("Key: " + key + ", Value: " + value);
         }
         cursor.close();
+    }
+
+    @Test
+    void redisMultiThreadTest() throws InterruptedException {
+
+        final int THREAD_COUNT = 100;
+        final String KEY = "TestRedis";
+
+        ValueOperations<String, Integer> ops = redisTemplateBoardView.opsForValue();
+        ops.set(KEY, 0);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+        CountDownLatch countDownLatch = new CountDownLatch(THREAD_COUNT);
+
+        for (int i=0; i<THREAD_COUNT; i++) {
+            executorService.submit(() -> {
+                try {
+                    long j = Objects.requireNonNullElse(ops.increment(KEY), 1L);
+                    System.out.println("Thread : " + j);
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
+
+        System.out.println("Value : " + ops.get(KEY));
+        assertEquals(THREAD_COUNT, ops.get(KEY), "The boardView should be equal to 101");
+
+        redisTemplateBoardView.delete(KEY); // @After
+
     }
 
 }

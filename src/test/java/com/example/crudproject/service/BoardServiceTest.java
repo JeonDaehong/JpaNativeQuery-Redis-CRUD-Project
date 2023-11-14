@@ -61,7 +61,7 @@ public class BoardServiceTest {
         if (actualOptional.isPresent()) {
             Board actual = actualOptional.get();
             System.out.println("투 스트링? : " + actual.toString());
-            assertEquals(THREAD_COUNT, actual.getBoardView(), "The boardView should be equal to 100");
+            assertEquals(THREAD_COUNT, actual.getBoardView(), "The boardView should be equal to 10000");
         } else {
             // Handle the case where the Optional is empty if needed
             System.out.println("Board not found with ID: " + boardId);

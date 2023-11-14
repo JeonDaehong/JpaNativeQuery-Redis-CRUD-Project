@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -80,8 +81,8 @@ public class BoardServiceImpl implements BoardService {
         ValueOperations<String, Integer> ops = redisViewTemplate.opsForValue();
         Integer redisView = ops.get(redisKey);
         if ( redisView != null ) {
-            ops.set(redisKey, redisView + 1);
-            return (redisView + 1);
+            long view = Objects.requireNonNullElse(ops.increment(redisKey), 1L);
+            return (int)view;
         } else {
             ops.set(redisKey, 1);
             return 1;
@@ -97,11 +98,7 @@ public class BoardServiceImpl implements BoardService {
 
         ValueOperations<String, Integer> ops = redisViewTemplate.opsForValue();
         Integer redisView = ops.get(redisKey);
-        if ( redisView != null ) {
-            return redisView;
-        } else {
-            return 0;
-        }
+        return Objects.requireNonNullElse(redisView, 0);
     }
 
     /**
