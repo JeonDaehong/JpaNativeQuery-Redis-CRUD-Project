@@ -23,6 +23,13 @@ This project utilizes two main tables: `TB_USER` and `TB_BOARD`.
 - `CRTE_DTTM` (DATETIME) - Creation timestamp.
 - `UPDT_DTTM` (DATETIME) - Update timestamp.
 
+### TB_BOARD_SCORE
+- `BOARD_ID` (BIGINT, 20) - Foreign key linking to the `BOARD_ID` in `TB_BOARD`.
+- `USER_ID` (BIGINT, 20) - Foreign key linking to the `USER_ID` in `TB_USER`.
+- `SCORE` (INT) - Content Score.
+- `CRTE_DTTM` (DATETIME) - Creation timestamp.
+- `UPDT_DTTM` (DATETIME) - Update timestamp.
+
 The `USER_ID` in `TB_USER` serves as a reference key to establish a relationship with the `TB_BOARD` table. Additionally, the `PWSD` field is used for securely storing passwords, and its VARCHAR length is set to accommodate the encrypted values.
 
 ## Features
@@ -78,6 +85,13 @@ JPA 네이티브 쿼리를 사용한 사용자 관리 및 포럼 게시물에 �
 - `CONTENT` (TEXT) - 게시물 내용.
 - `BOARD_VIEW` (INT) - 게시물 조회수.
 - `USER_ID` (BIGINT, 20) - `TB_USER`의 `USER_ID`와 연결된 외래 키.
+- `CRTE_DTTM` (DATETIME) - 생성 타임스탬프.
+- `UPDT_DTTM` (DATETIME) - 업데이트 타임스탬프.
+
+### TB_BOARD_SCORE
+- `BOARD_ID` (BIGINT, 20) - `TB_BOARD`의 `BOARD_ID`와 연결된 외래 키.
+- `USER_ID` (BIGINT, 20) - `TB_USER`의 `USER_ID`와 연결된 외래 키..
+- `SCORE` (INT) - 게시글의 점수
 - `CRTE_DTTM` (DATETIME) - 생성 타임스탬프.
 - `UPDT_DTTM` (DATETIME) - 업데이트 타임스탬프.
 
