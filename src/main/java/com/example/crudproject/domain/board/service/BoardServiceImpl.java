@@ -11,14 +11,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -39,12 +38,14 @@ public class BoardServiceImpl implements BoardService {
         try {
             BoardVo boardVo = BoardVo.fromBoardWriteDto(boardDto);
             boardVo.setBoardView(0);
+            boardVo.setAverageScore(0D);
             boardVo.setCreateDateTime(LocalDateTime.now());
             boardVo.setUpdateDateTime(LocalDateTime.now());
             boardRepository.writeBoard(
                     boardVo.getTitle(),
                     boardVo.getContent(),
                     boardVo.getBoardView(),
+                    boardVo.getAverageScore(),
                     boardVo.getCreateDateTime(),
                     boardVo.getUpdateDateTime(),
                     boardVo.getUserId());
@@ -88,31 +89,40 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     public BoardVo getBoardInfo(Long boardId) {
-        Board board = boardRepository.getBoardInfo(boardId);
-        BoardVo boardVo = BoardVo.fromBoardEntity(board);
-        boardVo.setBoardView(board.getBoardView() + getBoardViewRedis(board.getBoardId())); // 조회수
-        boardVo.setAverageScore(scoreRepository.getBoardAverageScore(board.getBoardId())); // 평점
 
-        return boardVo;
+        incrementRedisBoardView(boardId); // Async
+
+        // Parallel Processing
+        CompletableFuture<Board> boardFuture = CompletableFuture.supplyAsync(() -> boardRepository.getBoardInfo(boardId));
+        CompletableFuture<Integer> redisViewFuture = CompletableFuture.supplyAsync(() -> getBoardViewRedis(boardId));
+
+        return boardFuture.thenCombine(redisViewFuture, (board, redisView) -> {
+            BoardVo boardVo = BoardVo.fromBoardEntity(board);
+            boardVo.setBoardView(board.getBoardView() + redisView);
+
+            double averageScore = scoreRepository.getBoardAverageScore(boardId);
+            boardVo.setAverageScore(averageScore);
+
+            return boardVo;
+        }).join(); // 대기하고 결과 반환
     }
 
-
     /**
-     * Redis 에 조회수 추가 후 반환
+     * Redis 에 조회수 추가 후 반환 ( 비동기로 처리 하는 메서드 )
      */
+    @Async
     @Transactional
     @Override
-    public int getBoardViewRedisIncrement(Long boardId) {
+    public void incrementRedisBoardView(Long boardId) {
         String redisKey = RedisStringCode.BOARD_KEY_CODE;
         String redisHashKey = String.valueOf(boardId);
 
         HashOperations<String, Object, Integer> hashOperations = redisTemplate.opsForHash();
         Integer redisView = hashOperations.get(redisKey, redisHashKey);
         if ( redisView != null ) {
-            return Math.toIntExact(hashOperations.increment(redisKey, redisHashKey, 1));
+            hashOperations.increment(redisKey, redisHashKey, 1);
         } else {
             hashOperations.put(redisKey, redisHashKey, 1);
-            return 1;
         }
     }
 
@@ -170,6 +180,7 @@ public class BoardServiceImpl implements BoardService {
     /**
      * Redis 의 조회수를 전부 DB로 이동
      */
+    @Async
     @Transactional
     @Override
     public void transferBoardViewRedisToDB() {
