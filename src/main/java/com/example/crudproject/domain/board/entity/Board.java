@@ -26,6 +26,9 @@ public class Board {
     @Column(name = "BOARD_VIEW", nullable = false)
     private int boardView;
 
+    @Column(name = "AVG_SCORE", nullable = false)
+    private double averageScore;
+
     @Column(name = "CRTE_DTTM", nullable = false)
     private LocalDateTime createDateTime;
 
@@ -36,11 +39,12 @@ public class Board {
     private Long userId;
 
     @Builder
-    public Board(Long boardId, String title, String content, int boardView, LocalDateTime createDateTime, LocalDateTime updateDateTime, Long userId) {
+    public Board(Long boardId, String title, String content, int boardView, double averageScore, LocalDateTime createDateTime, LocalDateTime updateDateTime, Long userId) {
         this.boardId = boardId;
         this.title = title;
         this.content = content;
         this.boardView = boardView;
+        this.averageScore = averageScore;
         this.createDateTime = createDateTime;
         this.updateDateTime = updateDateTime;
         this.userId = userId;

@@ -14,12 +14,13 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Modifying
-    @Query ( value = "INSERT INTO TB_BOARD (TITLE, CONTENT, BOARD_VIEW, CRTE_DTTM, UPDT_DTTM, USER_ID)" +
-                     "VALUES (:title, :content, :boardView, :createDateTime, :updateDatetime, :userId)",
+    @Query ( value = "INSERT INTO TB_BOARD (TITLE, CONTENT, BOARD_VIEW, AVG_SCORE, CRTE_DTTM, UPDT_DTTM, USER_ID)" +
+                     "VALUES (:title, :content, :boardView, :averageScore, :createDateTime, :updateDatetime, :userId)",
             nativeQuery = true )
     void writeBoard(@Param(value = "title") String title,
                     @Param(value = "content") String content,
                     @Param(value = "boardView") int boardView,
+                    @Param(value = "averageScore") double averageScore,
                     @Param(value = "createDateTime") LocalDateTime createDateTime,
                     @Param(value = "updateDatetime") LocalDateTime updateDatetime,
                     @Param(value = "userId") Long userId);
@@ -68,5 +69,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Modifying
     @Query (value = "DELETE FROM TB_BOARD WHERE USER_ID = :userId", nativeQuery = true)
     void deleteBoardAllByUser(@Param("userId") Long userId);
+
+    @Query ( value = "SELECT BOARD_ID FROM TB_BOARD", nativeQuery = true)
+    List<Long> getAllBoardId();
+
+    @Modifying
+    @Query (value = "UPDATE TB_BOARD SET AVG_SCORE = :averageScore, UPDT_DTTM = :updateDateTime WHERE BOARD_ID = :boardId", nativeQuery = true)
+    void updateAverageScore(@Param("boardId") Long boardId,
+                            @Param("averageScore") double averageScore,
+                            @Param("updateDateTime") LocalDateTime updateDateTime);
 
 }

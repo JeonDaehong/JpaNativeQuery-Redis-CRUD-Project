@@ -15,7 +15,7 @@ public interface BoardService {
 
     BoardVo getBoardInfo(Long boardId);
 
-    int getBoardViewRedisIncrement(Long boardId);
+    void incrementRedisBoardView(Long boardId);
 
     int getBoardViewRedis(Long boardId);
 

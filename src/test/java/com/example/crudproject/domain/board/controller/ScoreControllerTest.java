@@ -25,8 +25,6 @@ public class ScoreControllerTest {
     private BoardService boardService;
 
     @Test
-    @Transactional
-    @Rollback
     @DisplayName("스코어 추가 로직 테스트")
     void registerScoreTest() {
 
@@ -44,8 +42,7 @@ public class ScoreControllerTest {
         scoreService.registerScore(scoreDto);
 
         // then
-        BoardVo boardVo = new BoardVo();
-        boardVo = boardService.getBoardInfo(testBoardId);
+        BoardVo boardVo = boardService.getBoardInfo(testBoardId);
         assertEquals(boardVo.getAverageScore(), testScore);
 
     }

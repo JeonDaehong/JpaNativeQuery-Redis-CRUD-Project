@@ -10,4 +10,6 @@ public interface ScoreService {
 
     String updateScore(ScoreDto scoreDto);
 
+    void calculateRating();
+
 }
