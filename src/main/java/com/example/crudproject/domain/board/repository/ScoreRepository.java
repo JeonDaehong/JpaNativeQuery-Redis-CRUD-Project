@@ -40,7 +40,7 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
             nativeQuery = true)
     void deleteScoreByBoard(@Param(value = "boardId") Long boardId);
 
-    @Query( value = "SELECT ROUND(SUM(SCORE) / COUNT(*), 2) AS AVERAGE_SCORE FROM TB_BOARD_SCORE WHERE BOARD_ID = :boardId",
+    @Query( value = "SELECT IFNULL(ROUND(SUM(SCORE) / COUNT(*), 2), 0) AS AVERAGE_SCORE FROM TB_BOARD_SCORE WHERE BOARD_ID = :boardId",
             nativeQuery = true )
     double getBoardAverageScore(@Param(value = "boardId") Long boardId);
 

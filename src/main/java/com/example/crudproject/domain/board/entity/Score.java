@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @Table(name = "TB_BOARD_SCORE")
-public class Score { // 복합키일 경우 Serializable 구현해야함.
+public class Score {
 
     @Id
     @Column(name = "BOARD_ID", nullable = false)
