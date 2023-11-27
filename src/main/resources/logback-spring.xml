@@ -3,8 +3,7 @@
     <property name="moduleId" value="around_hub_spring_boot"/>
     <property name="type" value="around_hub"/>
     <property name="logback" value="logback"/>
-    <property name="logdir" value="src/main/resources/log"/>
-
+    <property name="logdir" value="log"/>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>TRACE</level>
