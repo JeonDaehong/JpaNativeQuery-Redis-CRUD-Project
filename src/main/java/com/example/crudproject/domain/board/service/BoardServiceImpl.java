@@ -187,9 +187,12 @@ public class BoardServiceImpl implements BoardService {
 
         Map<Object, Object> hashEntries = redisTemplate.opsForHash().entries(RedisStringCode.BOARD_KEY_CODE);
         for (Map.Entry<Object, Object> entry : hashEntries.entrySet()) {
-            String key = (String) entry.getKey();
-            Integer addView = (Integer) entry.getValue();
-            if (addView != null) boardRepository.addBoardView(Long.parseLong(key), addView, LocalDateTime.now());
+            if (entry.getKey() != null) {
+                System.out.println(entry.getKey());
+                String key = (String) entry.getKey();
+                Integer addView = (Integer) entry.getValue();
+                if (addView != null) boardRepository.addBoardView(Long.parseLong(key), addView, LocalDateTime.now());
+            }
         }
 
         // Remove key

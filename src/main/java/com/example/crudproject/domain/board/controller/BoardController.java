@@ -4,6 +4,7 @@ import com.example.crudproject.domain.user.entity.User;
 import com.example.crudproject.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,24 +75,13 @@ public class BoardController {
 
 
     @GetMapping("/boardInfoPage")
-    public String getBoardInfoPage(HttpSession session, Model model,
-                                   @RequestParam(value = "boardId", required = false) Long boardId,
-                                   @RequestParam(value = "userId", required = false) Long userId ) {
+    public ResponseEntity<?> getBoardInfoPage(HttpSession session, Model model,
+                                              @RequestParam(value = "boardId", required = false) Long boardId) {
 
-        // Session 끊킬 시 redirect
-        User user = (User) session.getAttribute("loginUser");
-        boolean loginSession = user != null;
-        if ( !loginSession ) return "redirect:/loginPage";
 
-        model.addAttribute("user", user);
-        model.addAttribute("loginSession", loginSession);
         model.addAttribute("board", boardService.getBoardInfo(boardId));
 
-        // 수정, 삭제 버튼 활성화를 위한 boolean
-        boolean fixPossible = Objects.equals(user.getUserId(), userId);
-        model.addAttribute("fixPossible", fixPossible);
-
-        return "/boardInfo";
+        return ResponseEntity.ok("/boardInfo");
     }
 
 
