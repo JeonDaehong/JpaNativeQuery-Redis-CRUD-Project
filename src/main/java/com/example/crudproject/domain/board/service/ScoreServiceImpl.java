@@ -67,6 +67,9 @@ public class ScoreServiceImpl implements ScoreService {
         }
     }
 
+    /**
+     * 평점 계산
+     */
     @Async
     @Transactional
     @Override
