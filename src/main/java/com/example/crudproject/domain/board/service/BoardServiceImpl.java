@@ -90,6 +90,15 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardVo getBoardInfo(Long boardId) {
 
+//      병렬 프로그래밍을 한 것과 안 한 것의 성능 차이가 많이 발생
+//      Board board = boardRepository.getBoardInfo(boardId);
+//      BoardVo boardVo = BoardVo.fromBoardEntity(board);
+//      boardVo.setBoardView(board.getBoardView() + getBoardViewRedis(boardId));
+//      incrementRedisBoardView(boardId);
+//      double averageScore = scoreRepository.getBoardAverageScore(boardId);
+//      boardVo.setAverageScore(averageScore);
+//      return boardVo;
+
         incrementRedisBoardView(boardId); // Async
 
         // Parallel Processing
@@ -118,12 +127,16 @@ public class BoardServiceImpl implements BoardService {
         String redisHashKey = String.valueOf(boardId);
 
         HashOperations<String, Object, Integer> hashOperations = redisTemplate.opsForHash();
-        Integer redisView = hashOperations.get(redisKey, redisHashKey);
-        if ( redisView != null ) {
-            hashOperations.increment(redisKey, redisHashKey, 1);
-        } else {
-            hashOperations.put(redisKey, redisHashKey, 1);
-        }
+
+        hashOperations.increment(redisKey, redisHashKey, 1);
+
+//      이렇게 할 경우 hashOperations.put(redisKey, redisHashKey, 1); 때문에 동시성 문제 발생.
+//      Integer redisView = hashOperations.get(redisKey, redisHashKey);
+//      if ( redisView != null ) {
+//          hashOperations.increment(redisKey, redisHashKey, 1);
+//      } else {
+//          hashOperations.put(redisKey, redisHashKey, 1);
+//      }
     }
 
 
